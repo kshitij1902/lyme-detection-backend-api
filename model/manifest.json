@@ -1,0 +1,5 @@
+{
+  "modelFile": "LymeMobileQuantZhangKoduru.tflite",
+  "labelsFile": "labels.txt",
+  "modelType": "IMAGE_LABELING"
+}
