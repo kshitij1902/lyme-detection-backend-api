@@ -1,1 +1,2 @@
 web: gunicorn --chdir api app:app
+heroku ps:scale web=1
