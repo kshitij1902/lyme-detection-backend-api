@@ -9,7 +9,7 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 def DetectLyme(input_data):
-    interpreter = tf.lite.Interpreter(model_path="../model/LymeMobileQuantZhangKoduru.tflite")
+    interpreter = tf.lite.Interpreter(model_path="model/LymeMobileQuantZhangKoduru.tflite")
     interpreter.allocate_tensors()
 
     # Get input and output tensors.
