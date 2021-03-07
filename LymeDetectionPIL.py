@@ -4,7 +4,9 @@ import cv2
 import base64
 from PIL import Image
 
-
+print(tf.__version__)
+print(np.__version__)
+print(cv2.__version__)
 image = Image.open('images/Rash1.jpg')
 
 # summarize some details about the image 

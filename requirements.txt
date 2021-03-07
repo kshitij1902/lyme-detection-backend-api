@@ -1,5 +1,5 @@
 Flask
-tensorflow==2.0.4
+tensorflow==2.0.0
 gunicorn
-numpy==1.18.5
+numpy==1.16.5
 opencv-python-headless
