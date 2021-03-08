@@ -7,6 +7,8 @@ import base64
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+secret_key = "qfoSAN2DKhiGh8AXsER7cp5WS62JXy0M"
+threshold = 0.6
 
 def DetectLyme(input_data):
     interpreter = tf.lite.Interpreter(model_path="model/LymeMobileQuantZhangKoduru.tflite")
@@ -29,25 +31,48 @@ def DetectLyme(input_data):
     # Use `tensor()` in order to get a pointer to the tensor.
     output_data = interpreter.get_tensor(output_details[0]['index'])
     
-    if output_data[0][0] > 0.6:
-        status = 'Detected'
+    d=dict();
+    d['prob'] = str(output_data[0][0])
+    
+    if output_data[0][0] > threshold:
+        d['status'] = 'Detected'
     else :
-        status = 'Undetected'
-        
-    return status    
+        d['status'] = 'Undetected'
+         
+    return d
+
+@app.errorhandler(400)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 400
 
 @app.route('/api/upload', methods=['POST'])
 def uploadImage():
     json_data = request.json
-    img_base64 = json_data["image"] ## byte file
-    img_data = base64.b64decode(img_base64)
-    nparr = np.fromstring(img_data, np.float32)
-    img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    #img_300 = cv2.resize(img_np, (300, 300))
-    img_last = np.expand_dims(img_np, axis=0).astype('float32')
     
-    status = DetectLyme(img_last)
-    return jsonify({'status':status})
+    if "key" in json_data.keys():
+    #authenticating request
+        key = json_data["key"]
+    else:
+        key = ""
+        
+    if (key == secret_key):
+        img_base64 = json_data["image"] ## byte file
+        img_data = base64.b64decode(img_base64)
+        #nparr = np.fromstring(img_data, np.uint8)
+        nparr = np.frombuffer(img_data, np.uint8)
+        img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        img_np_RGB = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
+        img_300 = cv2.resize(img_np_RGB, (300, 300))
+        img_last = np.expand_dims(img_300, axis=0).astype('float32')
+
+        
+        result = DetectLyme(img_last)
+        return jsonify({'status':result['status'],'prob':result['prob']})
+     
+    else:
+        return flask.abort(400, description="Resource not found")
     
+
+        
 if __name__=="__main__":
     app.run(debug=True, use_reloader=False)

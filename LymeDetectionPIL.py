@@ -7,7 +7,7 @@ from PIL import Image
 print(tf.__version__)
 print(np.__version__)
 print(cv2.__version__)
-image = Image.open('images/Rash1.jpg')
+image = Image.open('images/batman.jpg')
 
 # summarize some details about the image 
 print(image.format) 
@@ -18,6 +18,10 @@ print(image.mode)
 img_input = np.asarray(image)
 img_input = cv2.resize(img_input, (300, 300))
 img_last = np.expand_dims(img_input, axis=0).astype('float32')
+
+print(img_last.dtype)
+print(img_last.shape)
+print(img_last[0][0][0:3][:])
 
 
 # Load the TFLite model and allocate tensors.
